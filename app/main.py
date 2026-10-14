@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from app.api.v1.events import router as events_router
+from app.api.v1.chunks import router as chunks_router
 
 app = FastAPI(
     title="InboundSense",
@@ -8,6 +9,7 @@ app = FastAPI(
 )
 
 app.include_router(events_router, prefix="/api/v1")
+app.include_router(chunks_router, prefix="/api/v1")
 
 
 @app.get("/health", tags=["health"])
