@@ -1,17 +1,16 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models import Event
 from app.db.session import get_db
 from app.schemas.event import EventResponse, EventCreate
-from app.services.nlp import process_event
-
+from app.services.tasks import process_event_task
 router = APIRouter(prefix="/events", tags=["events"])
 
-@router.post("/", response_model=EventResponse, status_code=201)
+@router.post("/", response_model=EventResponse, status_code=status.HTTP_202_ACCEPTED)
 async def create_event(
     event_in: EventCreate,
     db: AsyncSession = Depends(get_db),
@@ -20,8 +19,8 @@ async def create_event(
     db.add(event)
     await db.commit()
     await db.refresh(event)
-    await process_event(event.id, event.text, db)
-    await db.refresh(event)
+
+    process_event_task.delay(str(event.id), event.text)
 
     return event
 
