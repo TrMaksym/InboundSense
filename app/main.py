@@ -1,11 +1,31 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
-from app.api.v1.events import router as events_router
+from sqlalchemy import text
+
 from app.api.v1.chunks import router as chunks_router
+from app.api.v1.events import router as events_router
+from app.db.base import Base
+from app.db.session import engine
+
+from app.db.models import Event
+from app.db.models import Chunk
+
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    async with engine.begin() as conn:
+        await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector;"))
+        await conn.run_sync(Base.metadata.create_all)
+    yield
+
 
 app = FastAPI(
     title="InboundSense",
     version="0.1.0",
     description="Async NLP processing pipeline for inbound communications",
+    lifespan=lifespan,
 )
 
 app.include_router(events_router, prefix="/api/v1")
