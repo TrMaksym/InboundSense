@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.models import Event
 from app.db.session import get_db
 from app.schemas.event import EventResponse, EventCreate
+from app.services.nlp import process_event
 
 router = APIRouter(prefix="/events", tags=["events"])
 
@@ -19,6 +20,9 @@ async def create_event(
     db.add(event)
     await db.commit()
     await db.refresh(event)
+    await process_event(event.id, event.text, db)
+    await db.refresh(event)
+
     return event
 
 @router.get("/{event_id}", response_model=EventResponse)
