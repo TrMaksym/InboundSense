@@ -4,11 +4,11 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "InboundSense"
     ENVIRONMENT: str = "development"
 
-    POSTGRES_USER: str = "postgres"
-    POSTGRES_PASSWORD: str = "postgres"
+    POSTGRES_USER: str
+    POSTGRES_PASSWORD: str
     POSTGRES_HOST: str = "localhost"
     POSTGRES_PORT: int = 5432
-    POSTGRES_DB: str = "inboundsense_db"
+    POSTGRES_DB: str
 
     model_config = SettingsConfigDict(
         env_file=".env",
