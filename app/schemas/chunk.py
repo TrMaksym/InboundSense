@@ -4,6 +4,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 class ChunkCreate(BaseModel):
     event_id: UUID
+    chunk_index: int
     content: str = Field(
         ...,
         min_length=1,
@@ -20,6 +21,7 @@ class ChunkCreate(BaseModel):
 class ChunkBase(BaseModel):
     id: UUID
     event_id: UUID
+    chunk_index: int
     content: str
     created_at: datetime
 
