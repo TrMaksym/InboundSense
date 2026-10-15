@@ -1,8 +1,8 @@
 import uuid
 from typing import Sequence
 from sqlalchemy import update
-from curl_cffi import AsyncSession
 from fastembed import TextEmbedding
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models import Chunk, Event, EventStatus
 
