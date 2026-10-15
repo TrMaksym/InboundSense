@@ -5,7 +5,7 @@ from datetime import datetime
 from enum import Enum
 
 from pgvector.sqlalchemy import Vector
-from sqlalchemy import DateTime, Enum as SQLEnum, Float, ForeignKey, String, Text, func
+from sqlalchemy import DateTime, Enum as SQLEnum, Float, ForeignKey, String, Text, func, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -61,6 +61,10 @@ class Chunk(Base):
     id: Mapped[uuid.UUID] = mapped_column(
         primary_key=True,
         default=uuid.uuid4
+    )
+    chunk_index: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False
     )
     event_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("events.id",ondelete="CASCADE"),
