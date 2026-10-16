@@ -5,11 +5,10 @@ from sqlalchemy import text
 
 from app.api.v1.chunks import router as chunks_router
 from app.api.v1.events import router as events_router
+from app.api.v1.source import router as source_router
 from app.db.base import Base
 from app.db.session import engine
 
-from app.db.models import Event
-from app.db.models import Chunk
 
 
 
@@ -30,6 +29,7 @@ app = FastAPI(
 
 app.include_router(events_router, prefix="/api/v1")
 app.include_router(chunks_router, prefix="/api/v1")
+app.include_router(source_router, prefix="/api/v1")
 
 
 @app.get("/health", tags=["health"])

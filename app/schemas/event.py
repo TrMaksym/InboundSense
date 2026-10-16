@@ -12,6 +12,7 @@ class EventCreate(BaseModel):
         max_length=5000,
         description="The text of the event"
     )
+    source_id: UUID | None = None
 
 
 class EventBase(BaseModel):
@@ -25,5 +26,6 @@ class EventResponse(EventBase):
     id: UUID
     created_at: datetime
     processed_at: datetime | None = None
+    source_id: UUID | None = None
 
     model_config = ConfigDict(from_attributes=True)

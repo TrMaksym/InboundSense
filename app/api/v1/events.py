@@ -15,7 +15,7 @@ async def create_event(
     event_in: EventCreate,
     db: AsyncSession = Depends(get_db),
 ) -> Event:
-    event = Event(text=event_in.text)
+    event = Event(text=event_in.text, source_id=event_in.source_id)
     db.add(event)
     await db.commit()
     await db.refresh(event)
