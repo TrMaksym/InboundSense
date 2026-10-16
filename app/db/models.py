@@ -5,7 +5,7 @@ from datetime import datetime
 from enum import Enum
 
 from pgvector.sqlalchemy import Vector
-from sqlalchemy import DateTime, Enum as SQLEnum, Float, ForeignKey, String, Text, func, Integer
+from sqlalchemy import DateTime, Enum as SQLEnum, Float, ForeignKey, String, Text, func, Integer, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -54,6 +54,13 @@ class Event(Base):
         back_populates="event",
         cascade="all, delete-orphan",
     )
+    source_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("sources.id", ondelete="SET_NULL"),
+        nullable=True,
+        index=True,
+        default=None
+    )
+    source: Mapped[Source] = relationship("Source", back_populates="events")
 
 
 class Chunk(Base):
@@ -87,3 +94,38 @@ class Chunk(Base):
         "Event",
         back_populates="chunks",
     )
+
+
+class SourceType(str, Enum):
+    WEBHOOK = "webhook"
+    API = "api"
+    SCRAPER = "scraper"
+
+
+
+class Source(Base):
+    __tablename__ = "sources"
+
+    id: Mapped[uuid.UUID] = mapped_column(default=uuid.uuid4, primary_key=True)
+    name: Mapped[str] = mapped_column(String(150), doc="The name of the source")
+    source_type: Mapped[SourceType] = mapped_column(
+        SQLEnum(SourceType),
+        nullable=False,
+        default=SourceType.WEBHOOK,
+    )
+    target_url: Mapped[str | None] = mapped_column(
+        String(255),
+        nullable=True,
+        default=None,
+        doc="The target URL of the source",
+    )
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    fetch_interval_minutes: Mapped[int | None] = mapped_column(Integer, nullable=True, default=60)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False,
+    )
+    last_polled_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    events: Mapped[list[Event]] = relationship("Event", back_populates="source")

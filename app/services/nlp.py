@@ -1,7 +1,8 @@
+import asyncio
 import uuid
 from typing import Sequence
-from sqlalchemy import update
 from fastembed import TextEmbedding
+from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models import Chunk, Event, EventStatus
@@ -10,10 +11,10 @@ embedding_model = TextEmbedding(model_name="BAAI/bge-small-en")
 
 
 def split_text_into_chunks(
-        text: str,
-        chunk_size: int = 300,
-        chunk_overlap: int = 50,
-) -> list:
+    text: str,
+    chunk_size: int = 300,
+    chunk_overlap: int = 50,
+) -> list[str]:
     cleaned_text = text.strip()
     if not cleaned_text:
         return []
@@ -28,13 +29,13 @@ def split_text_into_chunks(
         end = start + chunk_size
 
         if end >= len(cleaned_text):
-            chunks.append(cleaned_text[start:]. strip())
+            chunks.append(cleaned_text[start:].strip())
             break
 
         window = cleaned_text[start:end]
         last_space = window.rfind(" ")
 
-        if last_space != -1:
+        if last_space > 0:
             end = start + last_space
 
         chunk = cleaned_text[start:end].strip()
@@ -47,31 +48,36 @@ def split_text_into_chunks(
     return chunks
 
 
-
 def generate_embedding(texts: Sequence[str]) -> list[list[float]]:
     if not texts:
         return []
 
     embedding_generator = embedding_model.embed(texts)
-    return list(embedding_generator)
+    return [vec.tolist() for vec in embedding_generator]
 
 
 async def process_event(event_id: uuid.UUID, payload_text: str, db: AsyncSession):
     chunks = split_text_into_chunks(payload_text)
     if not chunks:
+        await db.execute(
+            update(Event)
+            .where(Event.id == event_id)
+            .values(status=EventStatus.FAILED)
+        )
+        await db.commit()
         return []
 
-    embeddings = generate_embedding(chunks)
+    embeddings = await asyncio.to_thread(generate_embedding, chunks)
 
-    chunk_records = []
-    for index, (text, vector) in enumerate(zip(chunks, embeddings)):
-        chunk_record = Chunk(
+    chunk_records = [
+        Chunk(
             event_id=event_id,
             chunk_index=index,
             content=text,
             embedding=vector,
         )
-        chunk_records.append(chunk_record)
+        for index, (text, vector) in enumerate(zip(chunks, embeddings))
+    ]
 
     db.add_all(chunk_records)
 
@@ -82,5 +88,4 @@ async def process_event(event_id: uuid.UUID, payload_text: str, db: AsyncSession
     )
 
     await db.commit()
-
     return chunk_records
