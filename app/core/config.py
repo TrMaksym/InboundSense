@@ -11,6 +11,9 @@ class Settings(BaseSettings):
     POSTGRES_PORT: int = 5432
     POSTGRES_DB: str
 
+    REDIS_HOST: str = "redis"
+    REDIS_PORT: int = 6379
+
     model_config = SettingsConfigDict(
         env_file=".env",
         extra="ignore"
