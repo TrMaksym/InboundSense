@@ -3,6 +3,8 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 from enum import Enum
+from sqlalchemy import Index
+
 
 from pgvector.sqlalchemy import Vector
 from sqlalchemy import DateTime, Enum as SQLEnum, Float, ForeignKey, String, Text, func, Integer, Boolean
@@ -65,6 +67,16 @@ class Event(Base):
 
 class Chunk(Base):
     __tablename__ = "chunks"
+
+    _table_args__ = (
+        Index(
+            "idx_chunks_event_id_chunk_index",
+            "embedding",
+            postgresql_using="hnsw",
+            postgresql_with={"m": "16", "ef_construction": 100},
+            postgresql_ops={"embedding": "vector_cosine_ops"}
+        )
+    )
     id: Mapped[uuid.UUID] = mapped_column(
         primary_key=True,
         default=uuid.uuid4
