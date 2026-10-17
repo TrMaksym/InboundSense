@@ -17,4 +17,12 @@ celery_app.conf.update(
     task_track_started=True,
 )
 
+celery_app.conf.beat_schedule = {
+    "poll-scrapers-every-5-minutes": {
+        "task": "poll_scraper_sources_task",
+        "schedule": 300.0,
+    }
+}
+celery_app.conf.timezone = "UTC"
+
 celery_app.autodiscover_tasks(["app.services"])
