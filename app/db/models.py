@@ -55,7 +55,7 @@ class Event(Base):
         cascade="all, delete-orphan",
     )
     source_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("sources.id", ondelete="SET_NULL"),
+        ForeignKey("sources.id", ondelete="SET NULL"),
         nullable=True,
         index=True,
         default=None

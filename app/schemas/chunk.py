@@ -33,3 +33,18 @@ class ChunkSearchResult(ChunkBase):
         ...,
         description="The similarity of the chunk to the query"
     )
+
+
+class ChunkSearchRequest(BaseModel):
+    query: str = Field(
+        ...,
+        min_length=1,
+        max_length=1000,
+        description="The query used for the search"
+    )
+    limit: int = Field(
+        default=5,
+        ge=1,
+        le=50,
+        description="max results count"
+    )
