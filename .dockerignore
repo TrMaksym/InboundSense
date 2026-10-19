@@ -6,3 +6,5 @@ __pycache__
 .gitignore
 .env
 .pytest_cache
+ml_pipeline/training_output
+ml_pipeline/models/fine_tuned_model
