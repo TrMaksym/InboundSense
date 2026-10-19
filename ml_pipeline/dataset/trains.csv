@@ -1,0 +1,17 @@
+text,label
+"My payment failed and I cannot access my dashboard, please help",0
+"System throws 500 internal server error when clicking submit",0
+"The application crashes on startup after recent update",0
+"I found a bug in the billing report export",0
+"How much does the enterprise annual subscription cost?",1
+"We would like to request a demo and discuss pricing plans",1
+"Can we get a discount for a team of 50 people?",1
+"Looking to purchase the pro license for our company",1
+"How to configure Docker containers with PostgreSQL and Redis?",2
+"Deploying FastAPI application behind Nginx reverse proxy",2
+"Database query latency optimization using HNSW vector indexes",2
+"Asynchronous event processing pipeline with Celery workers",2
+"Hello how are you today?",3
+"Thank you very much for your feedback",3
+"Good morning hope you have a great week",3
+"Let us know when you have time for a brief coffee break",3
