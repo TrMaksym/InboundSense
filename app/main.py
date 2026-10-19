@@ -9,10 +9,11 @@ from app.api.v1.source import router as source_router
 from app.api.v1.search import router as search_router
 from app.api.v1.stream import router as stream_router
 from app.api.v1.analytics import router as analytics_router
+from app.core.logger import setup_logging
 from app.db.base import Base
 from app.db.session import engine
 
-
+setup_logging()
 
 
 @asynccontextmanager
