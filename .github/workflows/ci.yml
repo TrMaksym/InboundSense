@@ -35,6 +35,19 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
+    env:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: inboundsense_db
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: 5432
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/inboundsense_db
+      REDIS_HOST: localhost
+      REDIS_PORT: 6379
+      REDIS_URL: redis://localhost:6379/0
+      ENVIRONMENT: test
+      FASTEMBED_CACHE_PATH: /tmp/fastembed_cache
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -47,20 +60,25 @@ jobs:
       - name: Install Poetry
         run: |
           python -m pip install --upgrade pip -q
-          pip install poetry -q
+          python -m pip install "poetry>=2.0,<3" -q
           poetry config virtualenvs.create false
 
-      - name: Install Dependencies
-        run: poetry install --no-root --with dev --without train
+      - name: Check lock file is in sync
+        run: poetry check --lock
 
-      - name: Run Pytest with Coverage
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: inboundsense_db
-          POSTGRES_HOST: localhost
-          POSTGRES_PORT: 5432
-          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/inboundsense_db
-          REDIS_URL: redis://localhost:6379/0
-          ENVIRONMENT: test
-        run: python -m pytest -v --cov=app --cov-report=term-missing
+      - name: Install dependencies
+        run: |
+          poetry install --no-root --without train --no-interaction
+          pip install pytest pytest-asyncio pytest-cov
+
+      - name: Cache fastembed models
+        uses: actions/cache@v4
+        with:
+          path: /tmp/fastembed_cache
+          key: fastembed-${{ runner.os }}-v1
+
+      - name: Run database migrations
+        run: alembic upgrade head
+
+      - name: Run tests
+        run: pytest -v --cov=app --cov-report=term-missing
