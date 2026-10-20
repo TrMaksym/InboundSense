@@ -19,6 +19,7 @@ An asynchronous, distributed NLP processing and event-driven classification pipe
 * **Text Chunking & Preprocessing:** Dynamic semantic chunking supporting variable token boundaries and metadata sanitization via `selectolax`.
 * **Background Tasks (Celery & Redis):** Asynchronous ingestion pipelines with automated task retry, exponential backoff, and dedicated worker pools.
 * **Database & Concurrency:** Asynchronous database engine powered by `SQLAlchemy 2.0` and `asyncpg` connection pooling.
+* **Pipeline Analytics & Metrics:** Real-time aggregation of total events, chunk statistics, status breakdowns, and category distributions via dedicated async endpoints.
 * **Automated CI/CD Quality Checks:** GitHub Actions pipeline executing integration suites with real health-checked PostgreSQL (`pgvector`) and Redis containers.
 
 ---
