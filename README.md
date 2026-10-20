@@ -56,7 +56,7 @@ An asynchronous, distributed NLP processing and event-driven classification pipe
 
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/TrMaksym/InboundSense.git](https://github.com/TrMaksym/InboundSense.git)
+   git clone https://github.com/TrMaksym/InboundSense.git
    cd InboundSense
    ```
 
