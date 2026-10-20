@@ -1,5 +1,5 @@
 from uuid import UUID
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class SearchRequest(BaseModel):
@@ -13,14 +13,13 @@ class SearchRequest(BaseModel):
     )
 
 class SearchResultItem(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     chunk_id: UUID
     event_id: UUID
     chunk_index: int
     content: str
     similarity: float
-
-    class Config:
-        from_attributes = True
 
 
 class SearchResponse(BaseModel):

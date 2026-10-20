@@ -31,20 +31,25 @@ dependencies = [
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-[dependency-groups]
-dev = [
-    "pytest (>=9.1.1,<10.0.0)",
-    "pytest-asyncio (>=1.4.0,<2.0.0)",
-    "pytest-cov (>=7.1.0,<8.0.0)"
-]
+[tool.poetry.group.dev.dependencies]
+pytest = ">=9.1.1,<10.0.0"
+pytest-asyncio = ">=1.4.0,<2.0.0"
+pytest-cov = ">=7.1.0,<8.0.0"
 
-train = [
-    "torch (>=2.1.0,<3.0.0)",
-    "accelerate (>=1.1.0)",
-    "onnx (>=1.16.0,<2.0.0)",
-    "onnxscript (>=0.1.0,<1.0.0)"
-]
+[tool.poetry.group.train]
+optional = true
+
+[tool.poetry]
+package-mode = false
+
+[tool.poetry.group.train.dependencies]
+torch = ">=2.1.0,<3.0.0"
+accelerate = ">=1.1.0"
+onnx = ">=1.16.0,<2.0.0"
+onnxscript = ">=0.1.0,<1.0.0"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-asyncio_default_fixture_loop_scope = "function"
+asyncio_default_test_loop_scope = "session"
+asyncio_default_fixture_loop_scope = "session"
+testpaths = ["tests"]
