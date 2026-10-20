@@ -12,9 +12,14 @@ ENV POETRY_VIRTUALENVS_CREATE=false \
 
 WORKDIR /app
 
-COPY pyproject.toml poetry.lock* /app/
+COPY pyproject.toml poetry.lock /app/
 
-RUN poetry install --no-root --no-interaction --no-ansi
+RUN poetry install --no-root --without train --no-interaction --no-ansi && \
+    poetry cache clear pypoetry --all -n && \
+    rm -rf /root/.cache/pypoetry /root/.cache/pip
+
+RUN apt-get purge -y --auto-remove build-essential && \
+    rm -rf /var/lib/apt/lists/*
 
 COPY . /app/
 
