@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from sqlalchemy import text
+from starlette.middleware.cors import CORSMiddleware
 
 from app.api.v1.chunks import router as chunks_router
 from app.api.v1.events import router as events_router
@@ -29,6 +30,14 @@ app = FastAPI(
     version="0.1.0",
     description="Async NLP processing pipeline for inbound communications",
     lifespan=lifespan,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(events_router, prefix="/api/v1")
